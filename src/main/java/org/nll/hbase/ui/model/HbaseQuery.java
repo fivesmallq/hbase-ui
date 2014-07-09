@@ -15,6 +15,7 @@
  */
 package org.nll.hbase.ui.model;
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import java.util.List;
 
@@ -77,6 +78,11 @@ public class HbaseQuery {
 
     public void setFamilies(List<String> families) {
         this.families = families;
+    }
+
+    @Override
+    public String toString() {
+        return JSON.toJSONString(this); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

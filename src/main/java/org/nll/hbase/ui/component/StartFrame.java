@@ -79,6 +79,7 @@ public class StartFrame extends javax.swing.JFrame {
     private List<HbaseData> scan(HbaseQuery query) throws Exception {
         List<HbaseData> list = HbaseUtil.scan(HbaseContext.getConn(settingName), query);
         logger.info("{}", list);
+        logger.info("scan result size:{} query:{}", list.size(), query);
         return list;
     }
 
@@ -404,7 +405,7 @@ public class StartFrame extends javax.swing.JFrame {
                 .addComponent(spinner_row, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(button_refresh)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 372, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 371, Short.MAX_VALUE)
                 .addComponent(button_pre)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(button_next)

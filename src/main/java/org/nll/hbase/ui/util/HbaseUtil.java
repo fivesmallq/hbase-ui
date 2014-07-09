@@ -134,10 +134,16 @@ public class HbaseUtil {
         if (StringUtils.isNotNullOrEmpty(query.getPrefixRowkey())) {
             listForFilters.add(new PrefixFilter(Bytes.toBytes(query.getPrefixRowkey())));
         }
-        listForFilters.add(new PageFilter(query.getPageSize()));
-        Filter filterList = new FilterList(FilterList.Operator.MUST_PASS_ALL,
-                listForFilters);
-        scan.setFilter(filterList);
+        //FIXME set 10 but return 20
+        PageFilter pageFilter = new PageFilter(query.getPageSize());
+        listForFilters.add(pageFilter);
+        if (listForFilters.size() == 1) {
+            scan.setFilter(listForFilters.get(0));
+        } else {
+            Filter filterList = new FilterList(FilterList.Operator.MUST_PASS_ALL,
+                    listForFilters);
+            scan.setFilter(filterList);
+        }
         if (StringUtils.isNotNullOrEmpty(query.getStartRowkey())) {
             scan.setStartRow(Bytes.toBytes(query.getStartRowkey()));
         }
@@ -153,7 +159,9 @@ public class HbaseUtil {
         try {
             table = getTable(connection, query.getTableName());
             rs = table.getScanner(scan);
+            int count = 0;
             for (Result r : rs) {
+                count++;
                 HbaseData data = new HbaseData();
                 data.setRowkey(Bytes.toString(r.getRow()));
                 Map<String, FamilyData> dataValues = Maps.newLinkedHashMap();
@@ -170,6 +178,7 @@ public class HbaseUtil {
                 data.setDatas(dataValues);
                 datas.add(data);
             }
+            logger.info("hbase return data size:{}", count);
         } finally {
             Closeables.close(rs, true);
             Closeables.close(table, true);
