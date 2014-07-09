@@ -1,4 +1,4 @@
-package org.nll.nihiler.hbase.ui;
+package org.nll.hbase.ui;
 
 /**
  * Hello world!
