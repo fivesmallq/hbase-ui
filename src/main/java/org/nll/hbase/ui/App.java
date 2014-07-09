@@ -21,6 +21,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.plaf.FontUIResource;
+import org.nll.hbase.ui.component.ConnectionShowDialog;
 import org.nll.hbase.ui.component.StartFrame;
 
 public class App {
@@ -64,6 +65,8 @@ public class App {
                     // JDialog.setDefaultLookAndFeelDecorated(true);
                     StartFrame frame = new StartFrame();
                     frame.setVisible(true);
+                    new ConnectionShowDialog(frame, frame, true).setVisible(true);
+
                 }
             });
         } catch (Exception e) {
