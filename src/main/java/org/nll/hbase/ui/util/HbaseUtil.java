@@ -64,6 +64,10 @@ public class HbaseUtil {
         return connection;
     }
 
+    public static List<String> getTableName(HConnection connection) throws IOException {
+        return Lists.newArrayList(connection.getTableNames());
+    }
+
     /**
      * 获取table操作对象
      *

@@ -15,6 +15,7 @@
  */
 package org.nll.hbase.ui.service;
 
+import java.util.List;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.client.HConnection;
 import org.nll.hbase.ui.core.HbaseContext;
@@ -37,6 +38,8 @@ public class HbaseDataService {
         Configuration configuration = HbaseUtil.createConf(hbaseSetting);
         HConnection connection = HbaseUtil.createConnection(configuration);
         HbaseContext.addConn(hbaseSetting.getName(), connection);
+        List<String> tableNames = HbaseUtil.getTableName(connection);
+        logger.info("tableNames:{}", tableNames);
         logger.info("added connection by setting:{}", hbaseSetting);
     }
 }
