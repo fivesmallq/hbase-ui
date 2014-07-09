@@ -36,6 +36,7 @@ public class StartFrame extends javax.swing.JFrame {
         initComponents();
         this.setSize(800, 600);
         setLocationRelativeTo(null);
+        spinner_row.setValue(10);
     }
 
     void loadSchema(String name) {
@@ -49,11 +50,13 @@ public class StartFrame extends javax.swing.JFrame {
 
     public void loadFamily(String tableName) {
         List<HbaseSchema> schemas = HbaseContext.getSchemas(settingName);
-        combo_family.removeAllItems();
-        for (HbaseSchema hbaseSchema : schemas) {
-            if (hbaseSchema.getTableName().equals(tableName)) {
-                for (String family : hbaseSchema.getFamilies()) {
-                    combo_family.addItem(family);
+        if (schemas != null) {
+            combo_family.removeAllItems();
+            for (HbaseSchema hbaseSchema : schemas) {
+                if (hbaseSchema.getTableName().equals(tableName)) {
+                    for (String family : hbaseSchema.getFamilies()) {
+                        combo_family.addItem(family);
+                    }
                 }
             }
         }
@@ -143,7 +146,6 @@ public class StartFrame extends javax.swing.JFrame {
 
         panel_table.setBorder(javax.swing.BorderFactory.createTitledBorder("Table"));
 
-        combo_table.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         combo_table.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 combo_tableItemStateChanged(evt);
