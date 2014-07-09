@@ -16,11 +16,17 @@
 package org.nll.hbase.ui.component;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import java.awt.event.WindowEvent;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 import org.nll.hbase.ui.core.HbaseContext;
+import org.nll.hbase.ui.model.FamilyData;
+import org.nll.hbase.ui.model.HbaseData;
 import org.nll.hbase.ui.model.HbaseQuery;
 import org.nll.hbase.ui.model.HbaseSchema;
 import org.nll.hbase.ui.util.HbaseUtil;
@@ -70,11 +76,29 @@ public class StartFrame extends javax.swing.JFrame {
         }
     }
 
-    private List<Map<String, String>> scan(HbaseQuery query) throws Exception {
-        List<Map<String, String>> list = Lists.newArrayList();
-        list = HbaseUtil.scan(HbaseContext.getConn(settingName), query);
+    private List<HbaseData> scan(HbaseQuery query) throws Exception {
+        List<HbaseData> list = HbaseUtil.scan(HbaseContext.getConn(settingName), query);
         logger.info("{}", list);
         return list;
+    }
+
+    private void fillTable(List<HbaseData> datas) {
+        Set<String> names = Sets.newLinkedHashSet();
+        names.add("rowkey");
+        Vector<Vector<String>> tableDatas = new Vector<Vector<String>>();
+        for (HbaseData data : datas) {
+            Vector<String> tableData = new Vector<String>();
+            Map<String, FamilyData> map = data.getDatas();
+            tableData.add(data.getRowkey());
+            for (Map.Entry<String, FamilyData> one : map.entrySet()) {
+                tableData.add(one.getValue().getValue());
+                names.add(one.getValue().getFamilyName() + ":" + one.getValue().getKey());
+            }
+            tableDatas.add(tableData);
+        }
+        Vector<String> tableNames = new Vector<String>(names);
+        DefaultTableModel defaultTableModel = new DefaultTableModel(tableDatas, tableNames);
+        table_data.setModel(defaultTableModel);
     }
 
     /**
@@ -482,7 +506,7 @@ public class StartFrame extends javax.swing.JFrame {
         query.setPageSize(Integer.parseInt(row));
         query.setFamilies(Lists.newArrayList(family));
         try {
-            scan(query);
+            fillTable(scan(query));
         } catch (Exception ex) {
             logger.error("scan error!", ex);
         }

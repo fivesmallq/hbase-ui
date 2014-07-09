@@ -38,6 +38,8 @@ import org.apache.hadoop.hbase.filter.FilterList;
 import org.apache.hadoop.hbase.filter.PageFilter;
 import org.apache.hadoop.hbase.filter.PrefixFilter;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.nll.hbase.ui.model.FamilyData;
+import org.nll.hbase.ui.model.HbaseData;
 import org.nll.hbase.ui.model.HbaseQuery;
 import org.nll.hbase.ui.model.HbaseSchema;
 import org.nll.hbase.ui.model.HbaseSetting;
@@ -123,9 +125,9 @@ public class HbaseUtil {
      * @return
      * @throws Exception
      */
-    public static List<Map<String, String>> scan(HConnection connection, HbaseQuery query)
+    public static List<HbaseData> scan(HConnection connection, HbaseQuery query)
             throws Exception {
-        List<Map<String, String>> datas = Lists.newLinkedList();
+        List<HbaseData> datas = Lists.newLinkedList();
         List<Filter> listForFilters = Lists.newArrayList();
 
         Scan scan = new Scan();
@@ -152,14 +154,21 @@ public class HbaseUtil {
             table = getTable(connection, query.getTableName());
             rs = table.getScanner(scan);
             for (Result r : rs) {
-                Map<String, String> dataValues = Maps.newLinkedHashMap();
+                HbaseData data = new HbaseData();
+                data.setRowkey(Bytes.toString(r.getRow()));
+                Map<String, FamilyData> dataValues = Maps.newLinkedHashMap();
                 for (KeyValue kv : r.list()) {
+                    FamilyData familyData = new FamilyData();
                     String family = Bytes.toString(kv.getFamily());
                     String key = Bytes.toString(kv.getQualifier());
                     String value = Bytes.toString(kv.getValue());
-                    dataValues.put(family + ":" + key, value);
+                    familyData.setFamilyName(family);
+                    familyData.setKey(key);
+                    familyData.setValue(value);
+                    dataValues.put(key, familyData);
                 }
-                datas.add(dataValues);
+                data.setDatas(dataValues);
+                datas.add(data);
             }
         } finally {
             Closeables.close(rs, true);
