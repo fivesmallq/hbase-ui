@@ -54,9 +54,10 @@ public class ConnectionShowDialog extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Hbase Connections");
+        setResizable(false);
         setSize(new java.awt.Dimension(400, 300));
 
-        jLabel1.setText("Use Save button to save connection setting. Use");
+        jLabel1.setText("Use Save button to save connection setting. Use  ");
         jPanel1.add(jLabel1);
 
         jLabel3.setForeground(new java.awt.Color(0, 0, 255));
@@ -73,6 +74,7 @@ public class ConnectionShowDialog extends javax.swing.JDialog {
 
         jSplitPane1.setDividerLocation(180);
         jSplitPane1.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+        jSplitPane1.setEnabled(false);
 
         jPanel4.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
 
