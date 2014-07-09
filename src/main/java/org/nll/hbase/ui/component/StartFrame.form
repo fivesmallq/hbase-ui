@@ -182,6 +182,9 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="Scan Now"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="button_scanActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>

@@ -48,4 +48,7 @@ public class HbaseContext {
         return schemaMap.get(name);
     }
 
+    public static HConnection getConn(String name) {
+        return connectionMap.get(name);
+    }
 }

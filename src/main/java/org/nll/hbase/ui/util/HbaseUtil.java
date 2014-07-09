@@ -93,8 +93,8 @@ public class HbaseUtil {
      * @throws Exception
      */
     public static HTableInterface getTable(HConnection connection, String tableName) throws Exception {
-        // HTableInterface table = connection.getHTableDescriptor(bytes)
-        return null;
+        HTableInterface table = connection.getTable(tableName);
+        return table;
     }
 
     /**
@@ -129,13 +129,19 @@ public class HbaseUtil {
         List<Filter> listForFilters = Lists.newArrayList();
 
         Scan scan = new Scan();
-        listForFilters.add(new PrefixFilter(Bytes.toBytes(query.getPrefixRowkey())));
+        if (StringUtils.isNotNullOrEmpty(query.getPrefixRowkey())) {
+            listForFilters.add(new PrefixFilter(Bytes.toBytes(query.getPrefixRowkey())));
+        }
         listForFilters.add(new PageFilter(query.getPageSize()));
         Filter filterList = new FilterList(FilterList.Operator.MUST_PASS_ALL,
                 listForFilters);
         scan.setFilter(filterList);
-        scan.setStartRow(Bytes.toBytes(query.getStartRowkey()));
-        scan.setStopRow(Bytes.toBytes(query.getStopRowkey()));
+        if (StringUtils.isNotNullOrEmpty(query.getStartRowkey())) {
+            scan.setStartRow(Bytes.toBytes(query.getStartRowkey()));
+        }
+        if (StringUtils.isNotNullOrEmpty(query.getStopRowkey())) {
+            scan.setStopRow(Bytes.toBytes(query.getStopRowkey()));
+        }
         for (String family : query.getFamilies()) {
             scan.addFamily(Bytes.toBytes(family));
         }

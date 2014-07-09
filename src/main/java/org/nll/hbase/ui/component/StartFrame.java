@@ -15,11 +15,17 @@
  */
 package org.nll.hbase.ui.component;
 
+import com.google.common.collect.Lists;
 import java.awt.event.WindowEvent;
 import java.util.List;
+import java.util.Map;
 import javax.swing.JOptionPane;
 import org.nll.hbase.ui.core.HbaseContext;
+import org.nll.hbase.ui.model.HbaseQuery;
 import org.nll.hbase.ui.model.HbaseSchema;
+import org.nll.hbase.ui.util.HbaseUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -27,6 +33,8 @@ import org.nll.hbase.ui.model.HbaseSchema;
  */
 public class StartFrame extends javax.swing.JFrame {
 
+    private final static Logger logger = LoggerFactory
+            .getLogger(HbaseUtil.class);
     private String settingName;
 
     /**
@@ -60,6 +68,13 @@ public class StartFrame extends javax.swing.JFrame {
                 }
             }
         }
+    }
+
+    private List<Map<String, String>> scan(HbaseQuery query) throws Exception {
+        List<Map<String, String>> list = Lists.newArrayList();
+        list = HbaseUtil.scan(HbaseContext.getConn(settingName), query);
+        logger.info("{}", list);
+        return list;
     }
 
     /**
@@ -164,6 +179,11 @@ public class StartFrame extends javax.swing.JFrame {
         combo_family.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All" }));
 
         button_scan.setText("Scan Now");
+        button_scan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                button_scanActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout panel_tableLayout = new javax.swing.GroupLayout(panel_table);
         panel_table.setLayout(panel_tableLayout);
@@ -452,6 +472,21 @@ public class StartFrame extends javax.swing.JFrame {
             loadFamily(combo_table.getSelectedItem().toString());
         }
     }//GEN-LAST:event_combo_tableActionPerformed
+
+    private void button_scanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_scanActionPerformed
+        String tableName = combo_table.getSelectedItem().toString();
+        String family = combo_family.getSelectedItem().toString();
+        String row = spinner_row.getValue().toString();
+        HbaseQuery query = new HbaseQuery();
+        query.setTableName(tableName);
+        query.setPageSize(Integer.parseInt(row));
+        query.setFamilies(Lists.newArrayList(family));
+        try {
+            scan(query);
+        } catch (Exception ex) {
+            logger.error("scan error!", ex);
+        }
+    }//GEN-LAST:event_button_scanActionPerformed
 
     /**
      * @param args the command line arguments
