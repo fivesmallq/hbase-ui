@@ -5,6 +5,8 @@
  */
 package org.nll.hbase.ui.model;
 
+import com.alibaba.fastjson.JSON;
+
 /**
  *
  * @author fivesmallq
@@ -55,6 +57,11 @@ public class HbaseSetting {
 
     public void setQuorum(String quorum) {
         this.quorum = quorum;
+    }
+
+    @Override
+    public String toString() {
+        return JSON.toJSONString(this);
     }
 
 }

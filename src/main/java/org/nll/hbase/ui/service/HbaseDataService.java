@@ -20,6 +20,8 @@ import org.apache.hadoop.hbase.client.HConnection;
 import org.nll.hbase.ui.core.HbaseSettingContext;
 import org.nll.hbase.ui.model.HbaseSetting;
 import org.nll.hbase.ui.util.HbaseUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -27,9 +29,14 @@ import org.nll.hbase.ui.util.HbaseUtil;
  */
 public class HbaseDataService {
 
+    private final static Logger logger = LoggerFactory
+            .getLogger(HbaseUtil.class);
+
     public void connect(HbaseSetting hbaseSetting) throws Exception {
+
         Configuration configuration = HbaseUtil.createConf(hbaseSetting);
         HConnection connection = HbaseUtil.createConnection(configuration);
         HbaseSettingContext.addConn(hbaseSetting.getName(), connection);
+        logger.info("added connection by setting:{}", hbaseSetting);
     }
 }

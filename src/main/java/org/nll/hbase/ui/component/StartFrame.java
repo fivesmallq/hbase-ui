@@ -3,11 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.nll.hbase.ui;
+package org.nll.hbase.ui.component;
 
 import java.awt.event.WindowEvent;
 import javax.swing.JOptionPane;
-import org.nll.hbase.ui.component.ConnectionShowDialog;
 
 /**
  *

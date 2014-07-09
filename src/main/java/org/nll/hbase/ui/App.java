@@ -1,5 +1,6 @@
 package org.nll.hbase.ui;
 
+import org.nll.hbase.ui.component.StartFrame;
 import java.awt.Font;
 import java.util.Enumeration;
 import javax.swing.SwingUtilities;
