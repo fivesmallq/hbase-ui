@@ -5,11 +5,18 @@
  */
 package org.nll.hbase.ui.component;
 
+import com.google.common.base.Objects;
+import org.nll.hbase.ui.core.HbaseSettingContext;
+import org.nll.hbase.ui.model.HbaseSetting;
+import org.nll.hbase.ui.service.HbaseDataService;
+
 /**
  *
  * @author fivesmallq
  */
 public class ConnectionShowDialog extends javax.swing.JDialog {
+
+    private HbaseDataService dataService = new HbaseDataService();
 
     /**
      * Creates new form ConnectionDialog
@@ -19,6 +26,32 @@ public class ConnectionShowDialog extends javax.swing.JDialog {
         initComponents();
         this.setSize(600, 430);
         setLocationRelativeTo(null);
+    }
+
+    /**
+     * get text setting from textfield
+     *
+     * @return
+     */
+    private HbaseSetting getCurrentSetting() {
+        String name = text_name.getText();
+        String master = text_master.getText();
+        String quorum = text_quorum.getText();
+        String port = text_port.getText();
+        HbaseSetting hbaseSetting = new HbaseSetting();
+        hbaseSetting.setName(name);
+        hbaseSetting.setMaster(master);
+        hbaseSetting.setQuorum(quorum);
+        hbaseSetting.setPort(Objects.firstNonNull(port, "2181"));
+        return hbaseSetting;
+    }
+
+    private void connect(HbaseSetting setting) {
+        try {
+            dataService.connect(setting);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -40,12 +73,12 @@ public class ConnectionShowDialog extends javax.swing.JDialog {
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
+        text_quorum = new javax.swing.JTextField();
+        text_port = new javax.swing.JTextField();
+        text_master = new javax.swing.JTextField();
+        button_save = new javax.swing.JButton();
         jLabel8 = new javax.swing.JLabel();
-        jTextField4 = new javax.swing.JTextField();
+        text_name = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jPanel3 = new javax.swing.JPanel();
@@ -84,7 +117,12 @@ public class ConnectionShowDialog extends javax.swing.JDialog {
 
         jLabel7.setText("hbase.master :");
 
-        jButton1.setText("Save");
+        button_save.setText("Save");
+        button_save.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                button_saveActionPerformed(evt);
+            }
+        });
 
         jLabel8.setText("Name :");
 
@@ -101,12 +139,12 @@ public class ConnectionShowDialog extends javax.swing.JDialog {
                     .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTextField4)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
-                    .addComponent(jTextField2)
-                    .addComponent(jTextField3))
+                    .addComponent(text_name)
+                    .addComponent(text_quorum, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
+                    .addComponent(text_port)
+                    .addComponent(text_master))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton1)
+                .addComponent(button_save)
                 .addGap(48, 48, 48))
         );
         jPanel4Layout.setVerticalGroup(
@@ -115,20 +153,20 @@ public class ConnectionShowDialog extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(text_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(text_quorum, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(text_port, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1))
+                    .addComponent(text_master, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(button_save))
                 .addContainerGap(4604, Short.MAX_VALUE))
         );
 
@@ -161,6 +199,11 @@ public class ConnectionShowDialog extends javax.swing.JDialog {
         });
 
         button_connect.setText("Connect");
+        button_connect.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                button_connectActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -191,6 +234,15 @@ public class ConnectionShowDialog extends javax.swing.JDialog {
     private void button_cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_cancelActionPerformed
         this.dispose();
     }//GEN-LAST:event_button_cancelActionPerformed
+
+    private void button_saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_saveActionPerformed
+        HbaseSetting hbaseSetting = getCurrentSetting();
+        HbaseSettingContext.saveSetting(hbaseSetting);
+    }//GEN-LAST:event_button_saveActionPerformed
+
+    private void button_connectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_connectActionPerformed
+        connect(getCurrentSetting());
+    }//GEN-LAST:event_button_connectActionPerformed
 
     /**
      * @param args the command line arguments
@@ -237,7 +289,7 @@ public class ConnectionShowDialog extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton button_cancel;
     private javax.swing.JButton button_connect;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton button_save;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -252,9 +304,9 @@ public class ConnectionShowDialog extends javax.swing.JDialog {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
+    private javax.swing.JTextField text_master;
+    private javax.swing.JTextField text_name;
+    private javax.swing.JTextField text_port;
+    private javax.swing.JTextField text_quorum;
     // End of variables declaration//GEN-END:variables
 }

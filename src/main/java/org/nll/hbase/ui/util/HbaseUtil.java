@@ -1,0 +1,187 @@
+package org.nll.hbase.ui.util;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.io.Closeables;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.KeyValue;
+import org.apache.hadoop.hbase.client.HBaseAdmin;
+import org.apache.hadoop.hbase.client.HConnection;
+import org.apache.hadoop.hbase.client.HConnectionManager;
+import org.apache.hadoop.hbase.client.HTableInterface;
+import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.ResultScanner;
+import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.filter.Filter;
+import org.apache.hadoop.hbase.filter.FilterList;
+import org.apache.hadoop.hbase.filter.PageFilter;
+import org.apache.hadoop.hbase.filter.PrefixFilter;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.nll.hbase.ui.model.HbaseQuery;
+import org.nll.hbase.ui.model.HbaseSetting;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class HbaseUtil {
+
+    private final static Logger logger = LoggerFactory
+            .getLogger(HbaseUtil.class);
+    private static HConnection defaultConnection = null;
+
+    public static void setDefaultConnection(HConnection connection) {
+        defaultConnection = connection;
+    }
+
+    public static Configuration createConf(HbaseSetting hbaseSetting) {
+        Configuration conf = HBaseConfiguration.create();
+        conf.set("hbase.zookeeper.property.clientPort", hbaseSetting.getPort());
+        conf.set("hbase.zookeeper.quorum", hbaseSetting.getQuorum());
+        conf.set("hbase.master", hbaseSetting.getMaster());
+        return conf;
+    }
+
+    public static HConnection createConnection(Configuration configuration) throws Exception {
+        HConnection connection = HConnectionManager.createConnection(configuration);
+        return connection;
+    }
+
+    /**
+     * 获取table操作对象
+     *
+     * @param connection
+     * @param tableName
+     * @return
+     * @throws Exception
+     */
+    public static HTableInterface getTable(HConnection connection, String tableName) throws Exception {
+        HTableInterface table = connection.getTable(tableName);
+        return table;
+    }
+
+    /**
+     * 删除表
+     *
+     * @param tableName
+     * @param configuration
+     * @throws IOException
+     */
+    public static void dropData(String tableName, Configuration configuration) throws IOException {
+        // 新建一个数据库管理员
+        HBaseAdmin hAdmin;
+        hAdmin = new HBaseAdmin(configuration);
+        // 关闭一个表
+        hAdmin.disableTable(tableName);
+        // 删除一个表
+        hAdmin.deleteTable(tableName);
+        logger.info("drop table success! [{}]", tableName);
+    }
+
+    /**
+     * scan data
+     *
+     * @param connection
+     * @param query
+     * @return
+     * @throws Exception
+     */
+    public static List<Map<String, String>> scan(HConnection connection, HbaseQuery query)
+            throws Exception {
+        List<Map<String, String>> datas = Lists.newLinkedList();
+        List<Filter> listForFilters = Lists.newArrayList();
+
+        Scan scan = new Scan();
+        listForFilters.add(new PrefixFilter(Bytes.toBytes(query.getPrefixRowkey())));
+        listForFilters.add(new PageFilter(query.getPageSize()));
+        Filter filterList = new FilterList(FilterList.Operator.MUST_PASS_ALL,
+                listForFilters);
+        scan.setFilter(filterList);
+        scan.setStartRow(Bytes.toBytes(query.getStartRowkey()));
+        scan.setStopRow(Bytes.toBytes(query.getStopRowkey()));
+        for (String family : query.getFamilies()) {
+            scan.addFamily(Bytes.toBytes(family));
+        }
+        scan.setCaching(100);
+        ResultScanner rs = null;
+        HTableInterface table = null;
+        try {
+            table = getTable(connection, query.getTableName());
+            rs = table.getScanner(scan);
+            for (Result r : rs) {
+                Map<String, String> dataValues = Maps.newLinkedHashMap();
+                for (KeyValue kv : r.list()) {
+                    String family = Bytes.toString(kv.getFamily());
+                    String key = Bytes.toString(kv.getQualifier());
+                    String value = Bytes.toString(kv.getValue());
+                    dataValues.put(family + ":" + key, value);
+                }
+                datas.add(dataValues);
+            }
+        } finally {
+            Closeables.close(rs, true);
+            Closeables.close(table, true);
+        }
+        return datas;
+    }
+
+    /*
+     * 遍历查询hbase表
+     *
+     * @tableName 表名
+     */
+    public static void getResultScann(String tableName) throws Exception {
+        Scan scan = new Scan();
+        ResultScanner rs = null;
+        HTableInterface table = getTable(defaultConnection, tableName);
+        try {
+            rs = table.getScanner(scan);
+            for (Result r : rs) {
+                for (KeyValue kv : r.list()) {
+                    System.out.println("row:" + Bytes.toString(kv.getRow()));
+                    System.out.println("family:"
+                            + Bytes.toString(kv.getFamily()));
+                    System.out.println("qualifier:"
+                            + Bytes.toString(kv.getQualifier()));
+                    System.out
+                            .println("value:" + Bytes.toString(kv.getValue()));
+                    System.out.println("timestamp:" + kv.getTimestamp());
+                    System.out
+                            .println("-------------------------------------------");
+                }
+            }
+        } finally {
+            Closeables.close(rs, true);
+            Closeables.close(table, true);
+        }
+    }
+
+    public static void getResultScann(String tableName, String start_rowkey,
+            String stop_rowkey) throws Exception {
+        Scan scan = new Scan(Bytes.toBytes(start_rowkey));
+        ResultScanner rs = null;
+        HTableInterface table = getTable(defaultConnection, tableName);
+        try {
+            rs = table.getScanner(scan);
+            for (Result r : rs) {
+                for (KeyValue kv : r.list()) {
+                    System.out.println("row:" + Bytes.toString(kv.getRow()));
+                    System.out.println("family:"
+                            + Bytes.toString(kv.getFamily()));
+                    System.out.println("qualifier:"
+                            + Bytes.toString(kv.getQualifier()));
+                    System.out
+                            .println("value:" + Bytes.toString(kv.getValue()));
+                    System.out.println("timestamp:" + kv.getTimestamp());
+                    System.out
+                            .println("-------------------------------------------");
+                }
+            }
+        } finally {
+            Closeables.close(rs, true);
+            Closeables.close(table, true);
+        }
+    }
+}
