@@ -21,8 +21,10 @@ import com.google.common.io.Closeables;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.apache.hadoop.hbase.client.HConnection;
@@ -37,6 +39,7 @@ import org.apache.hadoop.hbase.filter.PageFilter;
 import org.apache.hadoop.hbase.filter.PrefixFilter;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.nll.hbase.ui.model.HbaseQuery;
+import org.nll.hbase.ui.model.HbaseSchema;
 import org.nll.hbase.ui.model.HbaseSetting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,8 +67,21 @@ public class HbaseUtil {
         return connection;
     }
 
-    public static List<String> getTableName(HConnection connection) throws IOException {
-        return Lists.newArrayList(connection.getTableNames());
+    public static List<HbaseSchema> getTableSchema(HConnection connection) throws IOException {
+        HTableDescriptor[] descriptors = connection.listTables();
+        List<HbaseSchema> hbaseSchemas = Lists.newLinkedList();
+        for (HTableDescriptor descriptor : descriptors) {
+            HbaseSchema hbaseSchema = new HbaseSchema();
+            hbaseSchema.setTableName(descriptor.getNameAsString());
+            List<String> familes = Lists.newLinkedList();
+            Set<byte[]> keys = descriptor.getFamiliesKeys();
+            for (byte[] key : keys) {
+                familes.add(Bytes.toString(key));
+            }
+            hbaseSchema.setFamilies(familes);
+            hbaseSchemas.add(hbaseSchema);
+        }
+        return hbaseSchemas;
     }
 
     /**
@@ -77,8 +93,8 @@ public class HbaseUtil {
      * @throws Exception
      */
     public static HTableInterface getTable(HConnection connection, String tableName) throws Exception {
-        HTableInterface table = connection.getTable(tableName);
-        return table;
+        // HTableInterface table = connection.getHTableDescriptor(bytes)
+        return null;
     }
 
     /**

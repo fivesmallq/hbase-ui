@@ -19,6 +19,7 @@ import java.util.List;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.client.HConnection;
 import org.nll.hbase.ui.core.HbaseContext;
+import org.nll.hbase.ui.model.HbaseSchema;
 import org.nll.hbase.ui.model.HbaseSetting;
 import org.nll.hbase.ui.util.HbaseUtil;
 import org.slf4j.Logger;
@@ -34,12 +35,12 @@ public class HbaseDataService {
             .getLogger(HbaseUtil.class);
 
     public void connect(HbaseSetting hbaseSetting) throws Exception {
-
         Configuration configuration = HbaseUtil.createConf(hbaseSetting);
         HConnection connection = HbaseUtil.createConnection(configuration);
         HbaseContext.addConn(hbaseSetting.getName(), connection);
-        List<String> tableNames = HbaseUtil.getTableName(connection);
-        logger.info("tableNames:{}", tableNames);
+        List<HbaseSchema> hbaseSchemas = HbaseUtil.getTableSchema(connection);
+        HbaseContext.addSchema(hbaseSetting.getName(), hbaseSchemas);
+        logger.info("schemas:{}", hbaseSchemas);
         logger.info("added connection by setting:{}", hbaseSetting);
     }
 }

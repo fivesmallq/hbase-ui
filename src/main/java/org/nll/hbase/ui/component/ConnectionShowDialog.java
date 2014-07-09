@@ -26,11 +26,20 @@ import org.nll.hbase.ui.service.HbaseDataService;
  */
 public class ConnectionShowDialog extends javax.swing.JDialog {
 
+    private StartFrame frame;
     private HbaseDataService dataService = new HbaseDataService();
 
     /**
      * Creates new form ConnectionDialog
      */
+    public ConnectionShowDialog(java.awt.Frame parent, StartFrame frame, boolean modal) {
+        super(parent, modal);
+        this.frame = frame;
+        initComponents();
+        this.setSize(600, 430);
+        setLocationRelativeTo(null);
+    }
+
     public ConnectionShowDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
@@ -59,6 +68,8 @@ public class ConnectionShowDialog extends javax.swing.JDialog {
     private void connect(HbaseSetting setting) {
         try {
             dataService.connect(setting);
+            this.dispose();
+            frame.loadSchema(setting.getName());
         } catch (Exception e) {
             e.printStackTrace();
         }

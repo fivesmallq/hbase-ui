@@ -16,13 +16,18 @@
 package org.nll.hbase.ui.component;
 
 import java.awt.event.WindowEvent;
+import java.util.List;
 import javax.swing.JOptionPane;
+import org.nll.hbase.ui.core.HbaseContext;
+import org.nll.hbase.ui.model.HbaseSchema;
 
 /**
  *
  * @author fivesmallq
  */
 public class StartFrame extends javax.swing.JFrame {
+
+    private String settingName;
 
     /**
      * Creates new form StartFrame
@@ -31,6 +36,27 @@ public class StartFrame extends javax.swing.JFrame {
         initComponents();
         this.setSize(800, 600);
         setLocationRelativeTo(null);
+    }
+
+    void loadSchema(String name) {
+        this.settingName = name;
+        List<HbaseSchema> schemas = HbaseContext.getSchemas(name);
+        combo_table.removeAllItems();
+        for (HbaseSchema hbaseSchema : schemas) {
+            combo_table.addItem(hbaseSchema.getTableName());
+        }
+    }
+
+    public void loadFamily(String tableName) {
+        List<HbaseSchema> schemas = HbaseContext.getSchemas(settingName);
+        combo_family.removeAllItems();
+        for (HbaseSchema hbaseSchema : schemas) {
+            if (hbaseSchema.getTableName().equals(tableName)) {
+                for (String family : hbaseSchema.getFamilies()) {
+                    combo_family.addItem(family);
+                }
+            }
+        }
     }
 
     /**
@@ -118,6 +144,16 @@ public class StartFrame extends javax.swing.JFrame {
         panel_table.setBorder(javax.swing.BorderFactory.createTitledBorder("Table"));
 
         combo_table.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        combo_table.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                combo_tableItemStateChanged(evt);
+            }
+        });
+        combo_table.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                combo_tableActionPerformed(evt);
+            }
+        });
 
         jLabel1.setText("Select Table : ");
 
@@ -397,12 +433,23 @@ public class StartFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void menu_connectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menu_connectActionPerformed
-        new ConnectionShowDialog(this, true).setVisible(true);
+        new ConnectionShowDialog(this, this, true).setVisible(true);
     }//GEN-LAST:event_menu_connectActionPerformed
 
     private void text_rowkey_prefixActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_text_rowkey_prefixActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_text_rowkey_prefixActionPerformed
+
+    private void combo_tableItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_combo_tableItemStateChanged
+
+    }//GEN-LAST:event_combo_tableItemStateChanged
+
+    private void combo_tableActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_combo_tableActionPerformed
+        Object value = combo_table.getSelectedItem();
+        if (value != null) {
+            loadFamily(combo_table.getSelectedItem().toString());
+        }
+    }//GEN-LAST:event_combo_tableActionPerformed
 
     /**
      * @param args the command line arguments
