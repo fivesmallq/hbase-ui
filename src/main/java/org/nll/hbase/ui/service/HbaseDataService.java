@@ -17,7 +17,7 @@ package org.nll.hbase.ui.service;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.client.HConnection;
-import org.nll.hbase.ui.core.HbaseSettingContext;
+import org.nll.hbase.ui.core.HbaseContext;
 import org.nll.hbase.ui.model.HbaseSetting;
 import org.nll.hbase.ui.util.HbaseUtil;
 import org.slf4j.Logger;
@@ -36,7 +36,7 @@ public class HbaseDataService {
 
         Configuration configuration = HbaseUtil.createConf(hbaseSetting);
         HConnection connection = HbaseUtil.createConnection(configuration);
-        HbaseSettingContext.addConn(hbaseSetting.getName(), connection);
+        HbaseContext.addConn(hbaseSetting.getName(), connection);
         logger.info("added connection by setting:{}", hbaseSetting);
     }
 }

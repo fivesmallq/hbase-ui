@@ -16,7 +16,7 @@
 package org.nll.hbase.ui.component;
 
 import com.google.common.base.Objects;
-import org.nll.hbase.ui.core.HbaseSettingContext;
+import org.nll.hbase.ui.core.HbaseContext;
 import org.nll.hbase.ui.model.HbaseSetting;
 import org.nll.hbase.ui.service.HbaseDataService;
 
@@ -247,7 +247,7 @@ public class ConnectionShowDialog extends javax.swing.JDialog {
 
     private void button_saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_saveActionPerformed
         HbaseSetting hbaseSetting = getCurrentSetting();
-        HbaseSettingContext.saveSetting(hbaseSetting);
+        HbaseContext.saveSetting(hbaseSetting);
     }//GEN-LAST:event_button_saveActionPerformed
 
     private void button_connectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_connectActionPerformed

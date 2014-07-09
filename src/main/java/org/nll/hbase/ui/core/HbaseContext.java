@@ -24,7 +24,7 @@ import org.nll.hbase.ui.model.HbaseSetting;
  *
  * @author fivesmallq
  */
-public class HbaseSettingContext {
+public class HbaseContext {
 
     private static Map<String, HbaseSetting> settingMap = Maps.newHashMap();
     private static Map<String, HConnection> connectionMap = Maps.newHashMap();
