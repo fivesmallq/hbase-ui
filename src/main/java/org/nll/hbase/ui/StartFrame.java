@@ -7,6 +7,7 @@ package org.nll.hbase.ui;
 
 import java.awt.event.WindowEvent;
 import javax.swing.JOptionPane;
+import org.nll.hbase.ui.component.ConnectionShowDialog;
 
 /**
  *
@@ -38,7 +39,7 @@ public class StartFrame extends javax.swing.JFrame {
     }
 
     public void exit() {
-        int value = JOptionPane.showConfirmDialog(this, "Exit Hbase Ui?", "Exit",
+        int value = JOptionPane.showConfirmDialog(this, "Exit Hbase UI?", "Exit",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (value == JOptionPane.OK_OPTION) {
             System.exit(0);
@@ -387,7 +388,7 @@ public class StartFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void menu_connectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menu_connectActionPerformed
-        new ConnectionDialog(this, true).setVisible(true);
+        new ConnectionShowDialog(this, true).setVisible(true);
     }//GEN-LAST:event_menu_connectActionPerformed
 
     private void text_rowkey_prefixActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_text_rowkey_prefixActionPerformed
